@@ -1,17 +1,23 @@
 package com.example.instrumentstore.securitylab;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
+import java.io.IOException;
+import java.net.URI;
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Intentional Sonar security exercise; not registered as an application bean.
- * No connection is created and the application never uses this verifier.
+ * The factory does not connect or send a request, and the app never calls it.
  * Fix: use the HTTPS client's default hostname verifier instead.
  */
-public final class InsecureHostnameVerifierDemo implements HostnameVerifier {
+public final class InsecureHostnameVerifierDemo {
 
-    @Override
-    public boolean verify(String hostname, SSLSession session) {
-        return true;
+    private InsecureHostnameVerifierDemo() {
+    }
+
+    public static HttpsURLConnection createTrainingConnection() throws IOException {
+        HttpsURLConnection connection = (HttpsURLConnection)
+                URI.create("https://example.invalid").toURL().openConnection();
+        connection.setHostnameVerifier((hostname, session) -> true);
+        return connection;
     }
 }
